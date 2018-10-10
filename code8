@@ -1,0 +1,138 @@
+#include<string>
+#include<iostream>
+
+using namespace std;
+
+string* addEntry(string *dynamicArray, size_t &size, string newEntry){
+    //adds an entry, string, to the strings array
+
+    ++size;//the new size
+    //allocating the array to be returned
+    string * toBeReturned = new string[size];
+    //copying the old elements to the new array
+    for(size_t i = 0; i<size-1; ++i) toBeReturned[i] = dynamicArray[i];
+    //adding the new string
+    toBeReturned[size-1] = newEntry;
+    //deleting the old allocated memory by the original array
+    delete[] dynamicArray;
+    //the following would be useful if the parameter were\
+    (string *&dynamicArray) but it makes no sense because the pointer will be\
+    deleted after finishin the function. It's dangrouse to pass a pointer by\
+    value, if the memory pointed by it will be deleted (dangling pointer)
+    dynamicArray = nullptr;
+
+    return toBeReturned;
+};
+
+string* deleteEntry(string *dynamicArray, size_t &size, string entryToDelete){
+
+    //declaring the pointer to be returned
+    string * toBeReturned;
+    //the index of entryToDelete if found
+    size_t targetIndex = 0;
+
+    //increasing targetIndex until the target is found or to size value
+    while(targetIndex< size && dynamicArray[targetIndex] != entryToDelete)
+        ++targetIndex;
+
+
+    //if the index is not found
+    if(targetIndex == size){
+        //allocating a new array of strings and making toBeReturned point to it
+        toBeReturned = new string[size];
+        //copying the original array elements to the new one
+        for(size_t i = 0; i<size; ++i)
+            toBeReturned[i] = dynamicArray[i];
+    }
+    else{//if the target is found
+        --size;//decreasing the size by one
+        //allocating a new array of strings and making toBeReturned point to it
+        toBeReturned = new string[size];
+
+        //initializing a size_t element to go through the new array and\
+        assigning the old array elements, except for entryToDelete, to it
+        size_t index = 0;
+
+        //copying all of the original array elements, before entryToDelete, to\
+        the new one
+        for(;index<targetIndex;++index) toBeReturned[index]=dynamicArray[index];
+
+        //copying all of the original array elements, after entryToDelete, to\
+        the new one
+        for(;index<size;++index)toBeReturned[index] = dynamicArray[index+1];
+    };
+
+
+    //deleting the old array
+    delete[] dynamicArray;
+    dynamicArray = nullptr;
+    //returning te pointer
+    return toBeReturned;
+
+};
+
+//the following function purpose is to display any array of strings
+void displaySArr(string* strings, size_t size){
+
+    cout<<"{ ";
+    for(size_t i =0; i < size - 1;++i) cout<<*(i+strings)<<", ";
+    cout<<*(strings+size-1)<<" }";
+
+};
+
+
+int main(){
+
+    //the array initial size
+    size_t size = 5;
+
+    //initializing the array
+    string* strings = new string[size]
+    {"string1", "string2", "string3", "string4", "string5"};
+
+    //displaying the array before any change
+    cout<<"The first case strings is equal to:\n";
+    displaySArr(strings, size);cout<<"\n";
+
+    //Assigning the value of the pointer returned after deleting a string to\
+    strings array
+    strings = deleteEntry(strings, size, "string1");
+
+    //displaying the array after the  assigning
+    cout<<"\nAfter strings = deleteEntry(strings, size, \"string1\");\n";
+    displaySArr(strings, size);cout<<"\n";
+
+    //Assigning the value of the pointer returned after deleting a string to\
+    strings array
+    strings = deleteEntry(strings, size, "string5");
+
+    //displaying the array after the  assigning
+    cout<<"\nAfter strings = deleteEntry(strings, size, \"string5\");\n";
+    displaySArr(strings, size);cout<<"\n";
+
+    //Assigning the value of the pointer returned, after deleting a string that\
+    is not in the array , to strings array
+    strings = deleteEntry(strings, size, "string10");
+
+    //displaying the array after the  assigning
+    cout<<"\nAfter strings = deleteEntry(strings, size, \"string10\");\n";
+    displaySArr(strings, size);cout<<"\n";
+
+    //Assigning the value of the pointer returned after adding a string to\
+    strings array
+    strings = addEntry(strings, size, "string1");
+
+    //displaying the array after the  assigning
+    cout<<"\nAfter strings = addEntry(strings, size, \"string1\");\n";
+    displaySArr(strings, size);cout<<"\n";
+
+    //Assigning the value of the pointer returned after adding a string to\
+    strings array
+    strings = addEntry(strings, size, "string5");
+
+    //displaying the array after the  assigning
+    cout<<"\nAfter strings = addEntry(strings, size, \"string5\");\n";
+    displaySArr(strings, size);cout<<"\n";
+
+    return 0;
+};
